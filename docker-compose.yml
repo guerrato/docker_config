@@ -1,0 +1,51 @@
+version: '3'
+services:
+    web:
+        container_name: nginx
+        image: nginx:latest
+        networks:
+          proj_net:
+            ipv4_address: 177.10.10.10
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www/projects
+            - ./configs/nginx/conf.d:/etc/nginx/conf.d
+        links:
+            - php
+        extra_hosts:
+            - "myproject.lo:127.0.0.1"
+    php:
+        container_name: php
+        build:
+            context: ./configs/php
+            dockerfile: Dockerfile
+        networks:
+          proj_net:
+            ipv4_address: 177.10.10.11
+        extra_hosts:
+            - "database.mysql:177.10.10.13"
+            - "myproject.lo:177.10.10.10"
+        volumes:
+            - .:/var/www/projects
+    mysql:
+        container_name: mysql
+        image: mysql:latest
+        networks:
+          proj_net:
+            ipv4_address: 177.10.10.13
+        ports:
+          - "3306:3306"
+        extra_hosts:
+            - "database.mysql:127.0.0.1"
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./data/mysql:/var/lib/mysql
+networks:
+  proj_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 177.10.10.0/24
