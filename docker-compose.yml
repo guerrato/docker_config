@@ -28,6 +28,19 @@ services:
             - "myproject.lo:177.10.10.10"
         volumes:
             - .:/var/www/projects
+    redis:
+        container_name: redis
+        image: redis:latest
+        networks:
+          proj_net:
+            ipv4_address: 177.10.10.12
+        ports:
+          - "6379:6379"
+        extra_hosts:
+            - "database.redis:127.0.0.1"
+        volumes:
+            - ./data/redis:/usr/local/etc/redis
+        restart: always
     mysql:
         container_name: mysql
         image: mysql:latest

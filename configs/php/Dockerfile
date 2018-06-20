@@ -19,6 +19,10 @@ RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkh
 	&& mv wkhtmltox/lib/* /usr/local/lib/ \
 	&& rm -rf wkhtmltox
 
+RUN apt-get update && apt-get install -y libmagickwand-dev libmagickcore-dev imagemagick \
+	&& yes '' | pecl upgrade imagick \
+	&& docker-php-ext-enable imagick
+
 ENV	QT_XKB_CONFIG_ROOT=/usr/share/X11/xkb
 
 CMD supervisord -c /etc/supervisor/supervisord.conf && supervisorctl reload && php-fpm
